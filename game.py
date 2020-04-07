@@ -81,15 +81,16 @@ class Game:
 
         while self.running:
             dt = clock.tick(60)/1000
+            print(dt)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
                 self.handle_input(event)
 
             if self.hold_k_left:
-                self.car.angle += 2.5
+                self.car.angle += 30 * dt
             if self.hold_k_right:
-                self.car.angle -= 2.5
+                self.car.angle -= 30 * dt
             if self.hold_k_forward:
                 self.car.move_forward()
             if self.hold_k_backward:

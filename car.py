@@ -39,7 +39,7 @@ class Car(Sprite):
 
     def move_backward(self):
         vx = - self.velocity * math.cos(math.radians(self.angle))/2
-        vy = self.velocity * math.sin(math.radians(self.angle))
+        vy = self.velocity * math.sin(math.radians(self.angle))/2
         self.rect.x += vx
         self.rect.y += vy
 
