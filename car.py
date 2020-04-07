@@ -1,7 +1,7 @@
 import pygame
 from pygame.sprite import Sprite
 import os
-
+import math
 
 class Car(Sprite):
     def __init__(self, image_path):
@@ -12,7 +12,7 @@ class Car(Sprite):
         self.rect = self.image.get_rect()
 
         self.steering = 0
-        self.velocity = 0
+        self.velocity = 10
 
         print('image: {}, rect: {}, center:{}'.format(self.image, self.rect, self.rect.center))
 
@@ -30,6 +30,18 @@ class Car(Sprite):
     # def turn_right(self):
     #     self.angle -= 5
     #     self.image, _ = self.rotation(image=self.image, rect=self.rect, degree=angle)
+
+    def move_forward(self):
+        vx = self.velocity * math.cos(math.radians(self.angle))
+        vy = -self.velocity * math.sin(math.radians(self.angle))
+        self.rect.x += vx
+        self.rect.y += vy
+
+    def move_backward(self):
+        vx = - self.velocity * math.cos(math.radians(self.angle))/2
+        vy = self.velocity * math.sin(math.radians(self.angle))
+        self.rect.x += vx
+        self.rect.y += vy
 
     @staticmethod
     def rotation(image, rect, degree):

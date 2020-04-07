@@ -15,13 +15,18 @@ class Game:
         self.map = Map(tmx_data=self.tmx_data)
         self.font = pygame.font.Font('freesansbold.ttf', 32)
         self.car = Car('mymap/car.png')
+        self.focus_car = False
 
         self.hold_k_left = False
         self.hold_k_right = False
+        self.hold_k_forward = False
+        self.hold_k_backward = False
 
     def init_group(self):
         map_data = pyscroll.data.TiledMapData(self.tmx_data)
         self.map_layer = pyscroll.BufferedRenderer(map_data, screen.get_size(), clamp_camera=True)
+        self.map_layer.zoom = 0.3
+        self.zoomchange = 1
         self.group = PyscrollGroup(map_layer=self.map_layer, default_layer=1)
 
     def init_world(self):
@@ -32,23 +37,43 @@ class Game:
         self.group.update(dt)
 
     def draw(self, surface):
+        if self.focus_car:
+            self.group.center(self.car.rect.center)
         self.group.draw(surface)
 
     def render_car(self):
+        self.focus_car = True
         self.group.add(self.car)
 
     def handle_input(self, event):
         print('handle')
         
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_EQUALS:
+                self.map_layer.zoom += .25
+            elif event.key == pygame.K_MINUS:
+                value = self.map_layer.zoom - .25
+                if value > 0:
+                    self.map_layer.zoom = value
+            elif event.key == pygame.K_SPACE:
+                self.car.velocity += 5
+
             if event.key == pygame.K_LEFT:
                 self.hold_k_left = True
             elif event.key == pygame.K_RIGHT:
                 self.hold_k_right = True
+
+            if event.key == pygame.K_UP:
+                self.hold_k_forward = True
+            elif event.key == pygame.K_DOWN:
+                self.hold_k_backward = True
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
                 self.hold_k_left = False
                 self.hold_k_right = False
+            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                self.hold_k_forward = False
+                self.hold_k_backward = False
 
 
     def run(self):
@@ -63,9 +88,13 @@ class Game:
                 self.handle_input(event)
 
             if self.hold_k_left:
-                self.car.angle += 5
+                self.car.angle += 2.5
             if self.hold_k_right:
-                self.car.angle -= 5
+                self.car.angle -= 2.5
+            if self.hold_k_forward:
+                self.car.move_forward()
+            if self.hold_k_backward:
+                self.car.move_backward()
 
             # screen.fill((95, 183, 229)) # sky color
             w, h = pygame.display.get_surface().get_size()
