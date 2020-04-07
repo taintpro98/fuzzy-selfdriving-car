@@ -46,7 +46,6 @@ class Game:
         self.group.add(self.car)
 
     def handle_input(self, event):
-        print('handle')
         
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_EQUALS:
@@ -96,17 +95,8 @@ class Game:
             if self.hold_k_backward:
                 self.car.move_backward()
 
-            # screen.fill((95, 183, 229)) # sky color
-            w, h = pygame.display.get_surface().get_size()
-            text = self.font.render("Hello World !", 1, (255, 0, 0))
-            text_rect = text.get_rect()
-            text_rect.right = w / 2 + text_rect.w / 2
-            text_rect.top = h / 2 - text_rect.h / 2
-            screen.blit(text, text_rect)
-
             self.update(dt)
             self.draw(screen)
-
 
             pygame.display.flip()
 
