@@ -2,6 +2,8 @@ import pygame
 from pygame.sprite import Sprite
 import os
 import math
+from pygame.math import Vector2
+
 
 class Car(Sprite):
     def __init__(self, image_path):
@@ -9,51 +11,24 @@ class Car(Sprite):
         original_image = pygame.image.load(os.path.join(image_path)).convert_alpha()
         self.original_image = pygame.transform.rotozoom(original_image, 0, 0.08)
         self.image = self.original_image
-        self.rect = self.image.get_rect()
+        
+        self.direction = Vector2(1, 0)  # A unit vector pointing rightward.
+        self.speed = 5
+        self.angle_speed = 0
 
-        self.steering = 0
-        self.velocity = 10
-
-        print('image: {}, rect: {}, center:{}'.format(self.image, self.rect, self.rect.center))
-
-    def set_position(self, x, y, angle):
-        self.rect.x = x
-        self.rect.y = y
+    def set_position(self, pos, angle):
+        self.rect = self.image.get_rect(center=pos)
+        self.position = Vector2(pos)
         self.angle = angle
-        self.image, _ = self.rotation(image=self.original_image, rect=self.rect, degree=angle)
-        print('rotated_image: {}, rot_rect: {}, old_center:{}'.format(self.image, self.rect, self.rect.center))
-
-    # def turn_left(self):
-    #     self.angle += 5
-    #     self.image, _ = self.rotation(image=self.image, rect=self.rect, degree=angle)
-
-    # def turn_right(self):
-    #     self.angle -= 5
-    #     self.image, _ = self.rotation(image=self.image, rect=self.rect, degree=angle)
-
-    def move_forward(self):
-        vx = self.velocity * math.cos(math.radians(self.angle))
-        vy = -self.velocity * math.sin(math.radians(self.angle))
-        self.rect.x += vx
-        self.rect.y += vy
-
-    def move_backward(self):
-        vx = - self.velocity * math.cos(math.radians(self.angle))/2
-        vy = self.velocity * math.sin(math.radians(self.angle))/2
-        self.rect.x += vx
-        self.rect.y += vy
-
-    @staticmethod
-    def rotation(image, rect, degree):
-        # Calculate rotated graphics & centre position
-        surf = pygame.Surface((48, 23))
-        rotated_image = pygame.transform.rotate(image, degree)
-        old_center = rect.center
-        rotated_surf = pygame.transform.rotate(surf, degree)
-        rot_rect = rotated_surf.get_rect()
-        rot_rect.center = old_center
-        return rotated_image, rot_rect
 
     def update(self, dt):
-        self.image, _ = self.rotation(image=self.original_image, rect=self.rect, degree=self.angle)
+        if self.angle_speed != 0:
+            # Rotate the direction vector and then the image.
+            self.direction.rotate_ip(self.angle_speed)
+            self.angle += self.angle_speed
+            self.image = pygame.transform.rotate(self.original_image, -self.angle)
+            self.rect = self.image.get_rect(center=self.rect.center)
+        # Update the position vector and the rect.
+        self.position += self.direction * self.speed
+        self.rect.center = self.position
 
