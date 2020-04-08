@@ -14,7 +14,6 @@ class Game:
         self.tmx_data = load_pygame(self.file_name)
         self.map = Map(tmx_data=self.tmx_data)
         self.font = pygame.font.Font('freesansbold.ttf', 32)
-        self.car = Car('mymap/car.png')
         self.focus_car = False
 
     def init_group(self):
@@ -25,7 +24,7 @@ class Game:
         self.group = PyscrollGroup(map_layer=self.map_layer, default_layer=1)
 
     def init_world(self):
-        self.car.set_position((450, 450), 0)
+        self.car = Car('mymap/car.png', (450, 450), 45)
         self.render_car()
 
     def update(self, dt):
