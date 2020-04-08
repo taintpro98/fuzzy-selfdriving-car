@@ -1,5 +1,7 @@
 # fuzzy-selfdriving-car
 
+## Installation
+pip install -r requirement.txt
 ## Run
 python game.py
 

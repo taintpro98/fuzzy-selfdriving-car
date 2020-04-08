@@ -1,0 +1,5 @@
+networkx
+pygame
+shapely
+pyscroll
+pytmx
