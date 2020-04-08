@@ -30,4 +30,3 @@ class Car(Sprite):
         # Update the position vector and the rect.
         self.position += self.direction * self.speed
         self.rect.center = self.position
-
