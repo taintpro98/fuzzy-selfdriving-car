@@ -69,7 +69,6 @@ class Game:
 
         while self.running:
             dt = clock.tick(60)/1000
-            print(dt)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
