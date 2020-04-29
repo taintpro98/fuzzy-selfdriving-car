@@ -31,13 +31,21 @@ class Game:
     def update(self, dt):
         self.group.update(dt)
 
+    def get_direction_angle(self):
+        path_direction = pygame.math.Vector2(
+            self.path_sides['left_side_points'][1][0] - self.path_sides['left_side_points'][0][0],
+            self.path_sides['left_side_points'][1][1] - self.path_sides['left_side_points'][0][1])
+        car_direction = pygame.math.Vector2(1, 0)
+        angle = path_direction.angle_to(car_direction)
+        return -angle
+
     def draw(self, surface):
         if self.focus_car:
             self.group.center(self.car.rect.center)
         self.group.draw(surface)
 
     def render_car(self, position):
-        angle = 100
+        angle = self.get_direction_angle()
         self.car.init_position(position, angle)
         self.focus_car = True
         self.group.add(self.car)
