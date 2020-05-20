@@ -1,0 +1,7 @@
+obstacle_distance,deviation,speed
+near,,stop
+medium,farleft,slower
+medium,farright,slower
+medium,left,slow
+medium,right,slow
+medium,middle,medium

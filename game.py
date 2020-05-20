@@ -7,19 +7,35 @@ from pyscroll.group import PyscrollGroup
 import utils
 from car import Car
 from shapely.geometry import LineString, Point, Polygon
-
+from traffic_light import TrafficLight
+from engine.inference import InferenceEngine
 
 class Game:
     def __init__(self):
+        self.inference_engine = InferenceEngine(
+            speed_rules_fn='engine/rules/speed_rules.csv',
+            steering_rules_fn='engine/rules/steering.csv',
+            sep=','
+        )
         self.running = False
-        self.file_name = 'map/map.tmx'
+        self.file_name = '/Users/macbook/Downloads/mymap/map.tmx'
         self.tmx_data = load_pygame(self.file_name)
         self.map = Map(tmx_data=self.tmx_data)
         self.font = pygame.font.Font('freesansbold.ttf', 32)
         self.focus_car = False
         self.start_end = []
         self.car = Car('mymap/car.png')
+
+        self.traffic_light_positions = None
+        self.traffic_lights = []
+
         self.path_sides = None
+
+        self.left_side_line_string = None
+        self.right_side_line_string = None
+
+        self.start = False
+        self.finished = False
 
     def init_group(self):
         map_data = pyscroll.data.TiledMapData(self.tmx_data)
@@ -27,6 +43,8 @@ class Game:
         self.map_layer.zoom = 0.3
         self.zoomchange = 1
         self.group = PyscrollGroup(map_layer=self.map_layer, default_layer=1)
+        # self.traffic_light_positions = self.map.get_position_of_traffic_lights('traffic_lights')
+        # self.display_traffic_light()
 
     def update(self, dt):
         self.group.update(dt)
@@ -39,6 +57,16 @@ class Game:
         angle = path_direction.angle_to(car_direction)
         return -angle
 
+    def display_traffic_light(self):
+        for position in self.traffic_light_positions:
+            traffic_light = TrafficLight(
+                position,
+                'traffic_lamp_red.png',
+                'traffic_lamp_yellow.png',
+                'traffic_lamp_green.png')
+            self.traffic_lights.append(traffic_light)
+        self.group.add(self.traffic_lights)
+
     def draw(self, surface):
         if self.focus_car:
             self.group.center(self.car.rect.center)
@@ -48,6 +76,9 @@ class Game:
         angle = self.get_direction_angle()
         self.car.init_position(position, angle)
         self.focus_car = True
+
+        self.car.left_side = self.left_side_line_string
+        self.car.right_side = self.right_side_line_string
         self.group.add(self.car)
 
     def convert_screen_coordinate_2_map_coordinate(self, pos):
@@ -66,20 +97,23 @@ class Game:
                 value = self.map_layer.zoom - .25
                 if value > 0:
                     self.map_layer.zoom = value
+            elif event.key == pygame.K_SPACE:
+                if self.left_side_line_string and self.right_side_line_string:
+                    self.start = not self.start
 
             if event.key == pygame.K_UP:
                 self.car.speed += 1
             elif event.key == pygame.K_DOWN:
                 self.car.speed -= 1
             elif event.key == pygame.K_LEFT:
-                self.car.angle_speed = -4
+                self.car.steering = -4
             elif event.key == pygame.K_RIGHT:
-                self.car.angle_speed = 4
+                self.car.steering = 4
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
-                self.car.angle_speed = 0
+                self.car.steering = 0
             elif event.key == pygame.K_RIGHT:
-                self.car.angle_speed = 0
+                self.car.steering = 0
 
     def handle_click(self):
         poll = pygame.event.poll
@@ -100,7 +134,7 @@ class Game:
                     self.obstacle_positions
                 ) = self.map.get_shortest_path(self.start_end[0][0], self.start_end[1][0])
 
-                # self.display_traffic_light()
+                self.display_traffic_light()
                 # self.display_obstacles(self.obstacle_positions)
                 self.left_side_line_string = LineString(coordinates=self.path_sides['left_side_points'])
                 self.right_side_line_string = LineString(coordinates=self.path_sides['right_side_points'])
@@ -113,7 +147,6 @@ class Game:
                     (left_start_point[1] + right_start_point[1]) / 2
                 )
                 self.render_car(start_point)
-
         return 0
 
     @staticmethod
@@ -121,7 +154,6 @@ class Game:
         print(point)
         x, y = point
         max_x, max_y, min_x, min_y = x + bound, y + bound, x - bound, y - bound
-
         return Polygon([(max_x, max_y), (max_x, min_y), (min_x, min_y), (min_x, max_y)])
 
 
@@ -138,6 +170,25 @@ class Game:
                     if event.type == pygame.QUIT:
                         sys.exit(0)
                     self.handle_input(event)
+
+            if self.start and not self.finished:
+                if not self.car.polygon.intersection(self.finish_point):
+                    variables = self.car.get_variables()
+                    # speed = self.inference.inference_speed(**variables)
+                    self.car.speed = 3 ##### ?????
+                    steering = self.inference_engine.inference_steering(variables['deviation'])
+                    steering_angle = (0.5 - steering) * 180 * 0.05
+                    print('steering_angle', steering_angle)
+                    print('steering', steering)
+                    # if speed:
+                    #     self.car.velocity[0] = speed * self.car.max_speed if speed > 0.1 else 0
+                    # else:
+                    #     self.car.acceleration += ACCELERATION
+
+                    self.car.steering += steering_angle
+                else:
+                    self.finished = True
+                    # self.car.velocity[0] = 0
 
             self.update(dt)
             self.draw(screen)
