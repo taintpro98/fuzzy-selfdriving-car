@@ -1,4 +1,9 @@
+# RESOURCES_DIR = 'resources/map'
+RESOURCES_DIR = 'map'
+
+CAR_SPEED = 200  # pixels per second
+MAP_FILENAME = 'map.tmx'
+ACCELERATION = 100
+brake_deceleration = 10
+
 FPS = 60
-RESOURCES_DIR = 'mymap'
-DISTANCE_LIGHT_LIMIT = 300
-DISTANCE_OBSTACLE_LIMIT = 100

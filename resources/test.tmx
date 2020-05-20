@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="54">
+ <tileset firstgid="1" source="grass1.tsx"/>
+ <tileset firstgid="1025" source="roads2W.tsx"/>
+ <layer id="1" name="backgrounds" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt2EOwZVkChtF8adu2K23btipt2660bdt2Vdq2WbbtXi8ihzWr0z3pO1iTPdhfxDkR5974wyJEiBCRSEQmClGJRnRiEJNYxCYOcYlHfBKQkEQkJglJSUZyUpCSVKQmDWlJR3rCAupnICOZyEwWspKN7OQgJ7nIzRvkIS/5yE8BClKIwhShKMUoTglKUorSlKEs5QLsl6cCFalEZapQlWpUpwY1qUVt6lCXetSnAQ1pRGOa0JRmNKcFLWnFm7SmDW0D7LejPR3oSCc604WudKM7PehJL3rTh770oz8DGMggBjOEoQxjOCMYyShGM4axAfbHMZ63mMBEJjGZKUxlGtOZwUxmMZs5zGUe81nAQhaxmCUsZRnLWcFKVrGaNQH217KO9WxgI5vYzBa2so3t7GAnu9jNHvayj/0c4CCHOMwRjnKMt3mH45zgJKcC7J/mDGc5x3kucJFLXOYKV7nGdW5wk1vc5g53ucd9HvCQRzzmCU95xnNe8JJXAfbf5T3e5wM+5CM+5hM+5TM+5wu+5Cu+5hu+5Tu+5wd+5Cd+5hd+5Td+5w/+5C/+JvyjG1Q/zF0RiURkohCVaEQnBjGJRWziEJd4xCcBCUlEYpKQlGQkJwUpSUVq0pCWdKQPC66fgYxkIjNZyEo2spODnOQiN2+Qh7zkIz8FKEghClOEohSjOCUoSSlKU4aylAuwXz78mfghjUgkIhOFqJH/+fzfnIXf+aZea9rQ9nW/AhWpRGWqUJVqVKcGNalFbepQl3rUpwHtwt+N+xOSiMQkIWnkfz7/N2fhd47SG80Yxr7ut6cDHelEZ7rQlW50pwc96UVv+tCXfvRnHON5iwlMZBKTmcJUpjGdGcxkFrOZw1zmMZ8FLGQRi1nCUpaxnBWsZBWrWRNgfy3rWM8GNrKJzWxhK9vYzg52sovd7GEv+9jPAQ5yiMMc4SjHeJt3OM4JTnIqwP5pznCWc5znAhe5xGWucJVrXOcGN7nFbe5wl3vc5wEPecRjnvCUZzznBS95FWD/Xd7jfT7gQz7iYz7hUz7jc77gS77ia77hW77je37gR37iZ37hV37jd/7gT/7ib8L/sAfVD3NXRCIRmShEJRrRiUFMYhGbOMQlHvFJQEISkZgkJCUZyUlBSlKRmjSkJR3pIwbXz0BGMpGZLGQlG9nJQU5ykZs3yENe8pGfAhSkEIUpQlGKUZwSlKQUpSlDWcoF2C9PBSpSicpUoSrVqE4NalKL2tShLvWoTwMa0ojGNKEpzWhOC1rSijdpTRvaBthvR3s60JFOdKYLXelGd3rQk170pg996Ud/BjCQQQxmCEMZxnBGMJJRjGYMYwPsj2M8bzGBiUxiMlOYyjSmM4OZzGI2c5jLPOazgIUsYjFLWMoylrOClaxiNWsC7K9lHevZwEY2sZktbGUb29nBTnaxmz3sZR/7OcBBDnGYIxzlGG/zDsc5wUlOBdg/zRnOco7zXOAil7jMFa5yjevc4Ca3uM0d7nKP+zzgIY94zBOe8oznvOAlrwLsv/6Mh3afCKHdp22A/XYRQrtPaPcJ7T6h3Se0+/yvd58gdpeGNKIxTWhKM5rTgpa0Cvvv7j5B7C4DGMggBjOEoQxjOCMYGRbafUK7T2j3Ce0+od0ntPuEdp/Q7hPafUK7T2j3+X/eff4DbTRkVQ==
+  </data>
+ </layer>
+ <objectgroup id="3" name="objects">
+  <object id="1" name="startPoints" x="33" y="320" width="64" height="63" visible="0"/>
+  <object id="2" name="endPoints" x="833" y="321" width="62" height="63" visible="0"/>
+  <object id="23" name="car_head" x="156.485" y="481.818">
+   <polygon points="0,0 172.765,57.5985 32.9101,10.8281"/>
+  </object>
+  <object id="25" x="146.5" y="497.5">
+   <point/>
+  </object>
+  <object id="26" x="301" y="545.5">
+   <point/>
+  </object>
+  <object id="27" name="test_polygon" x="399.5" y="645">
+   <polygon points="0,0 35.5,-41.5 52.5,-23.5 64,-16 67,4 61.5,23 45.5,35 27,33.5 23,26.5 16,20.5 11.5,19.5 5,14 3.5,7.5"/>
+  </object>
+  <object id="31" name="left" x="18.5" y="556">
+   <polygon points="0,0 15,-52 59,-120 115,-138.5 161.5,-121.5 161,-51.5 142.5,19.5 115,55 36,62"/>
+  </object>
+  <object id="32" name="right" x="256.5" y="638.5">
+   <polygon points="0,0 0,-24 3,-37 10,-73.5 14.5,-97 23.5,-124.5 46.5,-162.5 75.5,-187.5 113,-175 133,-154 131.5,-102 131.5,-35.5 112,9.5 74,22.5 47.5,22 21.5,14.5"/>
+  </object>
+  <object id="33" x="146.5" y="497">
+   <polygon points="0,0 154,49.5 -1,-0.5"/>
+  </object>
+  <object id="34" name="car" x="210.333" y="491.667">
+   <polygon points="0,0 14,-12.3333 33.3333,-5 45.3333,4 46,12.6667 39,38.3333 37,57.6667 28.6667,79 20.6667,101.667 11,111.333 -15.6667,109 -26,104 -30.3333,90.3333 -26.6667,70 -22.6667,54.6667 -15.6667,37.3333 -11,23.3333 -5,8.66667"/>
+  </object>
+  <object id="36" x="170.667" y="728.667">
+   <point/>
+  </object>
+  <object id="37" x="236" y="701.333">
+   <point/>
+  </object>
+  <object id="38" x="319.333" y="700">
+   <point/>
+  </object>
+  <object id="39" x="393.333" y="726">
+   <point/>
+  </object>
+  <object id="40" x="466.667" y="746.667">
+   <point/>
+  </object>
+  <object id="41" x="174.667" y="841.333">
+   <point/>
+  </object>
+  <object id="42" x="242.667" y="804.667">
+   <point/>
+  </object>
+  <object id="43" x="328" y="794.667">
+   <point/>
+  </object>
+  <object id="44" x="409.333" y="836.667">
+   <point/>
+  </object>
+  <object id="45" x="459.333" y="864">
+   <point/>
+  </object>
+  <object id="46" x="552.667" y="874">
+   <point/>
+  </object>
+  <object id="47" x="622" y="836">
+   <point/>
+  </object>
+  <object id="48" x="554" y="745.333">
+   <point/>
+  </object>
+  <object id="49" x="607.333" y="687.333">
+   <point/>
+  </object>
+  <object id="52" x="260" y="712.667">
+   <polygon points="0,0 72,1.33333 70.6667,33.3333 0,32.6667"/>
+  </object>
+ </objectgroup>
+</map>

@@ -5,85 +5,48 @@ import re
 
 from shapely.geometry import LineString
 
+
 class Map:
-    def __init__(self, tmx_data, graph_points_layer_name='graph_points', graph_road_points_layer_name='road_points', graph_road_point_props_sep='_',):
+    def __init__(self,
+                 tmx_data,
+                 graph_points_layer_name='graph_points',
+                 graph_road_points_layer_name='road_points',
+                 graph_road_point_props_sep='_',
+                 map_corner_points='corner_points'
+                 ):
         self.tmx_data = tmx_data
         self.graph_points_layer_name = graph_points_layer_name
+        # self.adjacent_points_property = adjacent_points_property
+        # self.adjacent_points_property_sep = adjacent_points_property_sep
         self.graph_road_points_layer_name = graph_road_points_layer_name
         self.graph_road_point_props_sep = graph_road_point_props_sep
-        self.graph = self.get_graph(tmx_data, graph_points_layer_name, graph_road_points_layer_name, graph_road_point_props_sep)
+        self.map_corner_points = map_corner_points
+        self.corners = self.get_corner(tmx_data, map_corner_points)
+        self.graph = self.get_graph(tmx_data,
+                                    graph_points_layer_name,
+                                    # adjacent_points_property,
+                                    # adjacent_points_property_sep,
+                                    graph_road_points_layer_name,
+                                    graph_road_point_props_sep)
+        self.smooth_edges_points = self.get_smooth_points(tmx_data, 'smooth_road_points')
         (
             self.traffic_light_positions,
             self.traffic_light_between_edges
-        ) = self.get_position_of_traffic_lights('traffic_lights')
-        # self.obstacle_positions = self.get_position_of_obstacles(tmx_data, 'obstacles')
-        # self.smooth_edges_points = self.get_smooth_points(tmx_data, 'smooth_road_points')
+        ) = self.get_position_of_traffic_lights(tmx_data, 'traffic_lights')
+
+        self.obstacle_positions = self.get_position_of_obstacles(tmx_data, 'obstacles')
 
     @staticmethod
-    def get_distance(node1: tuple, node2: tuple):
-        return np.sqrt((node1[0] - node2[0]) ** 2 + (node1[1] - node2[1]) ** 2)
-
-    def get_coordinates_of_node(self, node):
-        if self.graph.has_node(node):
-            attributes = self.graph.nodes[node]
-            x, y = attributes['x'], attributes['y']
-            return x, y
-        return None
-
-    def get_nearest_node_in_graph(self, x, y):
-        nearest_node = None
-        nearest_coordinate = None
-        min_distance = 999999999
-        for node in self.graph.nodes:
-            node_coordinates = self.get_coordinates_of_node(node)
-            distance = self.get_distance(node_coordinates, (x, y))
-            if distance < min_distance:
-                min_distance = distance
-                nearest_node = node
-                nearest_coordinate = node_coordinates
-
-        return nearest_node, nearest_coordinate
-
-    def get_traffic_lights(self, path):
-        traffic_lights = []
-
-        edges = list(zip(path[:-1], path[1:]))
-        for from_edge, to_edge in zip(edges[:-1], edges[1:]):
-            traffic_lights.append(self.traffic_light_between_edges.get((from_edge[0], to_edge[0], to_edge[1]), []))
-
-        return traffic_lights
-
-    # def get_obstacles(self, path):
-    #     obstacles = []
-    #     for from_point, to_point in zip(path[:-1], path[1:]):
-    #         obstacles.append(self.obstacle_positions[(from_point, to_point)])
-    #     return obstacles
-
-    def get_path_sides(self, path):
-        left_side_points = []
-        right_side_points = []
-
-        previous_edge = None
-        for from_point, to_point in zip(path[:-1], path[1:]):
-            if previous_edge:
-                smooth_points = self.smooth_edges_points.get((previous_edge[0], from_point, to_point))
-                if smooth_points:
-                    left_side_points.extend(smooth_points['left_side_points'])
-                    right_side_points.extend(smooth_points['right_side_points'])
-
-            edge_data = self.graph.get_edge_data(from_point, to_point)
-            left_side_points.extend(edge_data['left_side_points'])
-            right_side_points.extend(edge_data['right_side_points'])
-            previous_edge = from_point, to_point
-
-        return {
-            'left_side_points': left_side_points,
-            'right_side_points': right_side_points
-        }
-
-    def get_shortest_path(self, from_node, to_node):
-        path = nx.shortest_path(self.graph, from_node, to_node)
-        return path, self.get_path_sides(path), self.get_traffic_lights(path), None
+    def get_corner(
+            tmx_data,
+            map_corner_points
+    ):
+        topleft = tmx_data.get_object_by_name('topleft')
+        topright = tmx_data.get_object_by_name('topright')
+        bottomleft = tmx_data.get_object_by_name('bottomleft')
+        bottomright = tmx_data.get_object_by_name('bottomright')
+        return [topleft, topright, bottomleft, bottomright]
+    
 
     @staticmethod
     def get_graph(
@@ -98,6 +61,7 @@ class Map:
         graph_points_layer = tmx_data.get_layer_by_name(graph_points_layer_name)
         for point in graph_points_layer:
             nodes.append((point.name, {'x': point.x, 'y': point.y}))
+
         # get edges
         map_road_side_points = defaultdict(dict)
         road_points_layer = tmx_data.get_layer_by_name(graph_road_points_layer_name)
@@ -135,23 +99,8 @@ class Map:
             graph.add_node(node[0], **node[1])
 
         graph.add_edges_from(graph_edges)
+
         return graph
-
-    def get_position_of_traffic_lights(self, traffic_light_layer_name='traffic_lights'):
-        traffic_light_layer = self.tmx_data.get_layer_by_name(traffic_light_layer_name)
-        positions = []
-        map_edges_traffic_light = {}
-        for traffic_light in traffic_light_layer:
-            position = traffic_light.x, traffic_light.y
-            between = re.split(r',', traffic_light.properties['between'])
-
-            for light in between:
-                source, through, destination = re.split(r'_', light)
-                map_edges_traffic_light[(f'point_{source}', f'point_{through}', f'point_{destination}')] = position
-
-            positions.append(position)
-
-        return positions, map_edges_traffic_light
 
     @staticmethod
     def get_smooth_points(
@@ -184,3 +133,111 @@ class Map:
                 'right_side_points': left_side_points[::-1]
             }
         return smooth_edges_points
+
+    def get_nodes(self):
+        return list(self.graph.nodes)
+
+    def get_edges(self):
+        return list(self.graph.edges)
+
+    def get_coordinates_of_node(self, node):
+        if self.graph.has_node(node):
+            attributes = self.graph.nodes[node]
+            x, y = attributes['x'], attributes['y']
+            return x, y
+        return None
+
+    def get_nearest_node_in_graph(self, x, y):
+        nearest_node = None
+        nearest_coordinate = None
+        min_distance = 999999999
+        for node in self.graph.nodes:
+            node_coordinates = self.get_coordinates_of_node(node)
+            distance = self.get_distance(node_coordinates, (x, y))
+            if distance < min_distance:
+                min_distance = distance
+                nearest_node = node
+                nearest_coordinate = node_coordinates
+
+        return nearest_node, nearest_coordinate
+
+    @staticmethod
+    def get_distance(node1: tuple, node2: tuple):
+        return np.sqrt((node1[0] - node2[0]) ** 2 + (node1[1] - node2[1]) ** 2)
+
+    def get_path_sides(self, path):
+        left_side_points = []
+        right_side_points = []
+
+        previous_edge = None
+        for from_point, to_point in zip(path[:-1], path[1:]):
+            if previous_edge:
+                smooth_points = self.smooth_edges_points.get((previous_edge[0], from_point, to_point))
+                if smooth_points:
+                    left_side_points.extend(smooth_points['left_side_points'])
+                    right_side_points.extend(smooth_points['right_side_points'])
+
+            edge_data = self.graph.get_edge_data(from_point, to_point)
+            left_side_points.extend(edge_data['left_side_points'])
+            right_side_points.extend(edge_data['right_side_points'])
+            previous_edge = from_point, to_point
+
+        return {
+            'left_side_points': left_side_points,
+            'right_side_points': right_side_points
+        }
+
+    def get_traffic_lights(self, path):
+        traffic_lights = []
+
+        edges = list(zip(path[:-1], path[1:]))
+        for from_edge, to_edge in zip(edges[:-1], edges[1:]):
+            traffic_lights.append(self.traffic_light_between_edges.get((from_edge[0], to_edge[0], to_edge[1]), []))
+
+        print('get_traffic_lights', traffic_lights)
+        return traffic_lights
+
+    def get_obstacles(self, path):
+        obstacles = []
+        for from_point, to_point in zip(path[:-1], path[1:]):
+            obstacles.append(self.obstacle_positions[(from_point, to_point)])
+        return obstacles
+
+    def get_shortest_path(self, from_node, to_node):
+        path = nx.shortest_path(self.graph, from_node, to_node)
+        return path, self.get_path_sides(path), self.get_traffic_lights(path), None
+
+    @staticmethod
+    def get_position_of_traffic_lights(
+            tmx_data,
+            traffic_light_layer_name
+    ):
+        traffic_light_layer = tmx_data.get_layer_by_name(traffic_light_layer_name)
+        positions = []
+        map_edges_traffic_light = {}
+        for traffic_light in traffic_light_layer:
+            position = traffic_light.x, traffic_light.y
+            between = re.split(r',', traffic_light.properties['between'])
+
+            for light in between:
+                source, through, destination = re.split(r'_', light)
+                map_edges_traffic_light[(f'point_{source}', f'point_{through}', f'point_{destination}')] = position
+
+            positions.append(position)
+
+        return positions, map_edges_traffic_light
+
+    @staticmethod
+    def get_position_of_obstacles(tmx_data, obstacles_layer_name):
+        layer = tmx_data.get_layer_by_name(obstacles_layer_name)
+
+        positions = {}
+        for obstacle in layer:
+            name = obstacle.name
+            source, destination = re.split(r'_', name)
+            position = (obstacle.x, obstacle.y)
+            positions[(f'point_{source}', f'point_{destination}')] = position
+            positions[(f'point_{destination}', f'point_{source}')] = position
+
+        return positions
+

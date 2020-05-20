@@ -5,7 +5,8 @@ import random
 import utils
 from settings import FPS
 
-YELLOW_SECOND, SUM_SECOND = 6, 15
+YELLOW_SECOND, SUM_SECOND = 6, 7
+
 
 class TrafficLight(Sprite):
     def __init__(
