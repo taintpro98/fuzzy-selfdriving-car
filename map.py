@@ -193,8 +193,6 @@ class Map:
         edges = list(zip(path[:-1], path[1:]))
         for from_edge, to_edge in zip(edges[:-1], edges[1:]):
             traffic_lights.append(self.traffic_light_between_edges.get((from_edge[0], to_edge[0], to_edge[1]), []))
-
-        print('get_traffic_lights', traffic_lights)
         return traffic_lights
 
     def get_obstacles(self, path):

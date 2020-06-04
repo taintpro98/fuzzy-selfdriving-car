@@ -22,7 +22,6 @@ from inference_engine.inference_engine import InferenceEngine
 
 warnings.filterwarnings('ignore')
 
-
 class Game:
     file_name = utils.get_map(MAP_FILENAME)
 
@@ -51,7 +50,7 @@ class Game:
 
         self.group = PyscrollGroup(map_layer=self.map_layer, default_layer=1)
 
-        self.car = Car('car.png')
+        self.car = Car('lamborghini.png')
         self.obstacles = []
 
         self.path = None
@@ -243,10 +242,11 @@ class Game:
         self.map_layer.zoom = 2
 
         angle = self.get_direction_angle()
-        self.car.position = position
-        self.car.angle = angle
+        self.car.init_position(position, angle)
+        # self.car.position = position
+        # self.car.angle = angle
 
-        self.car.traffic_lights.extend(self.traffic_lights)
+        # self.car.traffic_lights.extend(self.traffic_lights)
         self.car.left_side = self.left_side_line_string
         self.car.right_side = self.right_side_line_string
 
@@ -272,18 +272,21 @@ class Game:
     def run(self):
         clock = pygame.time.Clock()
         self.running = True
-        from collections import deque
-        times = deque(maxlen=FPS)
+        # from collections import deque
+        # times = deque(maxlen=FPS)
 
         try:
             while self.running:
 
                 dt = clock.tick(FPS) / 1000.
-                times.append(clock.get_fps())
+                # times.append(clock.get_fps())
 
                 if len(self.start_end) < 2:
                     self.handle_click()
-                self.handle_input()
+                    print('a', dt)
+                else:
+                    self.handle_input()
+                    print('b', dt)
 
                 if self.start and not self.finished:
                     if not self.car.polygon.intersection(self.finish_point):

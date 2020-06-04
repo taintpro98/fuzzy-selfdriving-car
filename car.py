@@ -18,14 +18,17 @@ class Car(Sprite):
 
     def __init__(self, image_path):
         super(Car, self).__init__()
-        self.original_image = pygame.transform.rotozoom(utils.load_image(image_path).convert_alpha(), 0, 0.08)
-        self.image = self.original_image
+        self.original_image = pygame.transform.rotozoom(utils.load_image(image_path).convert_alpha(), 0, 0.12)
+        # self.image = self.original_image
         self.velocity = [0, 0]
         self._position = [0, 0]
         self._old_position = self.position
-        self.rect = self.image.get_rect()
-        self.width = self.rect.width
-        self.height = self.rect.height
+        # self.rect = self.image.get_rect()
+        # self.width = self.rect.width
+        # self.height = self.rect.height
+        self.width = self.original_image.get_rect().width
+        self.height = self.original_image.get_rect().height
+
         self.direction = [1, 0]
         self.acceleration = 0
         self.angle = 0
@@ -39,6 +42,14 @@ class Car(Sprite):
         self.right_side = None
         self.topleft, self.topright, self.bottomright, self.bottomleft = None, None, None, None
         self.previous_distance_light = 999999999
+
+    def init_position(self, position, angle):
+        self.image = self.original_image
+        self.rect = self.image.get_rect(center=position)
+        self.position = position
+        self.angle = angle
+
+        self.traffic_lights.extend(self.traffic_lights)
 
     @property
     def position(self):
@@ -83,6 +94,8 @@ class Car(Sprite):
         self.rect.center = self._position
         self.topleft, self.topright, self.bottomright, self.bottomleft = self.get_polygon()
         self.polygon = Polygon([self.topleft, self.topright, self.bottomright, self.bottomleft])
+        # print('topleft', self.bottomleft)
+        # print('top left car', self.rect.x - self.rect.width/2)
 
     def update_velocity(self, dt):
         v0 = self.velocity[0] + self.acceleration * dt
@@ -193,9 +206,9 @@ class Car(Sprite):
 
     def get_light_status(self):
         if len(self.traffic_lights) > 0:
+            print("traffic_lights", self.traffic_lights)
             traffic_light = self.traffic_lights[0]
             return traffic_light.get_light_status()
-
         return None
 
     def get_variables(self):
@@ -203,7 +216,7 @@ class Car(Sprite):
         distance_obstacle = self.get_obstacle_distance()
         deviation = self.get_deviation()
         light_status = None if distance_light is None else self.get_light_status()
-
+        print('light_status', light_status)
         if distance_obstacle and distance_light and (
                 distance_obstacle < distance_light
         ):
