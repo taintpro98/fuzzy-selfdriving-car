@@ -326,9 +326,15 @@
    <point/>
   </object>
   <object id="411" name="point_3" x="1356" y="451">
+   <properties>
+    <property name="adjacent" value="point_2,point_4,point_13"/>
+   </properties>
    <point/>
   </object>
   <object id="412" name="point_4" x="2008" y="422">
+   <properties>
+    <property name="adjacent" value="point_3,point_5,point_7"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>
@@ -1446,7 +1452,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="5" name="traffic_lights" visible="0">
+ <objectgroup id="5" name="traffic_lights">
   <object id="25" name="traffic_light_1" x="492" y="1066.67">
    <properties>
     <property name="between" value="2_1_11,2_1_12,11_1_12,11_1_2,12_1_2,12_1_11"/>
@@ -1496,9 +1502,15 @@
    <point/>
   </object>
   <object id="466" name="traffic_light_3" x="1362.67" y="445.333">
+   <properties>
+    <property name="between" value="2_3_13,2_3_4,4_3_13"/>
+   </properties>
    <point/>
   </object>
   <object id="467" name="traffic_light_4" x="2016.33" y="422">
+   <properties>
+    <property name="between" value="3_4_5,3_4_7,5_4_7"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>
