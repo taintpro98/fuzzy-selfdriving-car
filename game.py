@@ -246,7 +246,7 @@ class Game:
         # self.car.position = position
         # self.car.angle = angle
 
-        # self.car.traffic_lights.extend(self.traffic_lights)
+        self.car.traffic_lights.extend(self.traffic_lights)
         self.car.left_side = self.left_side_line_string
         self.car.right_side = self.right_side_line_string
 
@@ -283,10 +283,8 @@ class Game:
 
                 if len(self.start_end) < 2:
                     self.handle_click()
-                    print('a', dt)
                 else:
                     self.handle_input()
-                    print('b', dt)
 
                 if self.start and not self.finished:
                     if not self.car.polygon.intersection(self.finish_point):

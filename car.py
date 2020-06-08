@@ -49,8 +49,6 @@ class Car(Sprite):
         self.position = position
         self.angle = angle
 
-        self.traffic_lights.extend(self.traffic_lights)
-
     @property
     def position(self):
         return list(self._position)
@@ -206,7 +204,6 @@ class Car(Sprite):
 
     def get_light_status(self):
         if len(self.traffic_lights) > 0:
-            print("traffic_lights", self.traffic_lights)
             traffic_light = self.traffic_lights[0]
             return traffic_light.get_light_status()
         return None
@@ -216,7 +213,6 @@ class Car(Sprite):
         distance_obstacle = self.get_obstacle_distance()
         deviation = self.get_deviation()
         light_status = None if distance_light is None else self.get_light_status()
-        print('light_status', light_status)
         if distance_obstacle and distance_light and (
                 distance_obstacle < distance_light
         ):

@@ -5,7 +5,7 @@ import random
 import utils
 from settings import FPS
 
-YELLOW_SECOND, SUM_SECOND = 6, 7
+YELLOW_SECOND, SUM_SECOND = 6, 8
 
 
 class TrafficLight(Sprite):
@@ -52,6 +52,7 @@ class TrafficLight(Sprite):
 
     def update(self, dt):
         self.no_frames = (self.no_frames + 1) % FPS
+        print('no_frame', self.no_frames)
         if self.no_frames == 0:
             self.second = (self.second + 1) % SUM_SECOND
         display_image = self.get_display_image()
@@ -65,7 +66,6 @@ class TrafficLight(Sprite):
         text_height = text.get_height()
 
         self.image = pygame.Surface((self.width + text_width, self.height + text_height), pygame.SRCALPHA, 32)
-        # self.image = self.image.convert_alpha()
         self.image.blit(display_image, [0, 0])
         self.image.blit(text, [self.width, self.height / 2 - text_width / 2])
 
