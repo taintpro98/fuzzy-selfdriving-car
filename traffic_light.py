@@ -52,7 +52,6 @@ class TrafficLight(Sprite):
 
     def update(self, dt):
         self.no_frames = (self.no_frames + 1) % FPS
-        print('no_frame', self.no_frames)
         if self.no_frames == 0:
             self.second = (self.second + 1) % SUM_SECOND
         display_image = self.get_display_image()
@@ -68,6 +67,26 @@ class TrafficLight(Sprite):
         self.image = pygame.Surface((self.width + text_width, self.height + text_height), pygame.SRCALPHA, 32)
         self.image.blit(display_image, [0, 0])
         self.image.blit(text, [self.width, self.height / 2 - text_width / 2])
+
+    # def update(self, dt):
+    #     display_image = self.get_display_image()
+    #     for e in pygame.event.get():
+            
+    #         if e.type == pygame.USEREVENT:
+    #             self.second = (self.second + 1) % SUM_SECOND
+    #         if e.type == pygame.QUIT: break
+    #     else:
+    #         text = self.font.render(
+    #             str(SUM_SECOND - self.second if self.second > YELLOW_SECOND else YELLOW_SECOND - self.second),
+    #             True,
+    #             (0, 0, 0)
+    #         )
+    #         text_width = text.get_width()
+    #         text_height = text.get_height()
+    #         self.image = pygame.Surface((self.width + text_width, self.height + text_height), pygame.SRCALPHA, 32)
+    #         self.image.blit(display_image, [0, 0])
+    #         self.image.blit(text, [self.width, self.height / 2 - text_width / 2])
+            
 
     def get_light_status(self):
         return self.second / SUM_SECOND
