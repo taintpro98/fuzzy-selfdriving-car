@@ -70,6 +70,29 @@ class Game:
             self.group.center(self.car.rect.center)
         self.group.draw(surface)
 
+    def restart(self):
+        self.start_end = []
+
+        self.traffic_light_positions = None
+        self.traffic_lights = []
+
+        map_data = pyscroll.data.TiledMapData(self.tmx_data)
+        self.map_layer = pyscroll.BufferedRenderer(map_data, screen.get_size(), clamp_camera=True)
+        self.map_layer.zoom = 0.3
+        self.zoomchange = 1
+        self.group = PyscrollGroup(map_layer=self.map_layer, default_layer=1)
+
+        self.path = None
+        self.path_sides = None
+        self.left_side_line_string = None
+        self.right_side_line_string = None
+        self.obstacle_positions = None
+        self.finish_point = None
+        self.focus_car = False
+
+        self.start = False
+        self.finished = False
+        
     def handle_click(self):
         poll = pygame.event.poll
         event = poll()
@@ -133,6 +156,8 @@ class Game:
                 elif event.key == K_SPACE:
                     if self.left_side_line_string and self.right_side_line_string:
                         self.start = not self.start
+                elif event.key == K_r:
+                    self.restart()
 
             # if event.type = SPACE:
 
@@ -266,7 +291,6 @@ class Game:
         print(point)
         x, y = point
         max_x, max_y, min_x, min_y = x + bound, y + bound, x - bound, y - bound
-
         return Polygon([(max_x, max_y), (max_x, min_y), (min_x, min_y), (min_x, max_y)])
 
     def run(self):
@@ -274,10 +298,12 @@ class Game:
         self.running = True
         # from collections import deque
         # times = deque(maxlen=FPS)
+        # pygame.mixer.init()
+        pygame.mixer.music.load("/Users/macbook/Downloads/test3.mp3") 
+        pygame.mixer.music.play(-1,0.0)
 
         try:
             while self.running:
-
                 dt = clock.tick(FPS) / 1000.
                 # times.append(clock.get_fps())
 
@@ -322,27 +348,27 @@ class Game:
                 if self.path_sides:
                     pygame.draw.lines(
                         screen,
-                        Color('blue'),
+                        Color('violet'),
                         False,
                         self.map_layer.translate_points(self.path_sides['left_side_points']),
                         4
                     )
                     pygame.draw.lines(
                         screen,
-                        Color('blue'),
+                        Color('violet'),
                         False,
                         self.map_layer.translate_points(self.path_sides['right_side_points']),
                         4
                     )
 
-                car_polygon = self.car.get_polygon()
-                pygame.draw.lines(
-                    screen,
-                    Color('red'),
-                    True,
-                    self.map_layer.translate_points(car_polygon),
-                    4
-                )
+                # car_polygon = self.car.get_polygon()
+                # pygame.draw.lines(
+                #     screen,
+                #     Color('red'),
+                #     True,
+                #     self.map_layer.translate_points(car_polygon),
+                #     4
+                # )
 
                 pygame.display.flip()
 
@@ -354,7 +380,7 @@ if __name__ == '__main__':
     pygame.init()
     pygame.font.init()
     screen = utils.init_screen(950, 950)
-    pygame.display.set_caption('Test')
+    pygame.display.set_caption('Fuzzy Self-Driving Car')
 
     try:
         game = Game()
