@@ -1,7 +1,7 @@
 from pygame.sprite import Sprite
 import pygame
 import math
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Point, Polygon, LineString
 
 import utils
 
@@ -38,9 +38,11 @@ class Car(Sprite):
         self.obstacles = []
         self.obstacles_unsorted = []
         self.polygon = None
+        self.light_detector = None
         self.left_side = None
         self.right_side = None
         self.topleft, self.topright, self.bottomright, self.bottomleft = None, None, None, None
+        self.topleft_detector, self.topright_detector, self.bottomright_detector, self.bottomleft_detector = None, None, None, None
         self.previous_distance_light = 999999999
 
     def init_position(self, position, angle):
@@ -56,9 +58,6 @@ class Car(Sprite):
     @position.setter
     def position(self, value):
         self._position = list(value)
-        # self.rect = pygame.Rect((value[0] - self.height / 2, value[1] - self.width / 2),
-        #                         (self.width , self.height))
-        # self.angle = value[1]
 
     def get_polygon(self):
         topleft_vec = pygame.math.Vector2(self.width / 2, 0) + pygame.math.Vector2(0, -self.height / 2)
@@ -77,8 +76,28 @@ class Car(Sprite):
         bottomright_vec = bottomright_vec.rotate(-self.angle)
         bottomright = (self._position[0] + bottomright_vec.x, self._position[1] + bottomright_vec.y)
 
-        poly = [topleft, topright, bottomright, bottomleft]
-        return poly
+        return [topleft, topright, bottomright, bottomleft]
+        
+
+    def get_light_detector(self):
+        topleft_vec = pygame.math.Vector2(self.width / 2, 0) + pygame.math.Vector2(0, -3 * self.height)
+        topleft_vec = topleft_vec.rotate(-self.angle)
+        topleft = (self._position[0] + topleft_vec.x, self._position[1] + topleft_vec.y)
+
+        topright_vec = pygame.math.Vector2(self.width / 2, 0) + pygame.math.Vector2(0, 3 * self.height)
+        topright_vec = topright_vec.rotate(-self.angle)
+        topright = (self._position[0] + topright_vec.x, self._position[1] + topright_vec.y)
+
+        bottomleft_vec = pygame.math.Vector2(-self.width / 2, 0) + pygame.math.Vector2(0, -3 * self.height)
+        bottomleft_vec = bottomleft_vec.rotate(-self.angle)
+        bottomleft = (self._position[0] + bottomleft_vec.x, self._position[1] + bottomleft_vec.y)
+
+        bottomright_vec = pygame.math.Vector2(-self.width / 2, 0) + pygame.math.Vector2(0, 3 * self.height)
+        bottomright_vec = bottomright_vec.rotate(-self.angle)
+        bottomright = (self._position[0] + bottomright_vec.x, self._position[1] + bottomright_vec.y)
+
+        return [topleft, topright, bottomright, bottomleft]
+        
 
     def update(self, dt):
         self._old_position = self.position[:]
@@ -91,9 +110,10 @@ class Car(Sprite):
         self._position = self.get_update_position(self._position, dt)
         self.rect.center = self._position
         self.topleft, self.topright, self.bottomright, self.bottomleft = self.get_polygon()
+        self.topleft_detector, self.topright_detector, self.bottomright_detector, self.bottomleft_detector = self.get_light_detector()
+
         self.polygon = Polygon([self.topleft, self.topright, self.bottomright, self.bottomleft])
-        # print('topleft', self.bottomleft)
-        # print('top left car', self.rect.x - self.rect.width/2)
+        self.light_detector = Polygon([self.topleft_detector, self.topright_detector, self.bottomright_detector, self.bottomleft_detector])
 
     def update_velocity(self, dt):
         v0 = self.velocity[0] + self.acceleration * dt
@@ -146,17 +166,16 @@ class Car(Sprite):
 
     def get_light_distance(self):
         if len(self.traffic_lights) > 0:
+            print('get_light_dis', len(self.traffic_lights))
             traffic_light = self.traffic_lights[0]
             distance = Point(traffic_light.position).distance(self.polygon)
-
-            if distance < 0.1:
+            if not not self.light_detector.intersection(Point(traffic_light.position)):
                 self.traffic_lights.pop(0)
-                if len(self.traffic_lights) == 0:
-                    return 1
-                else:
-                    traffic_light = self.traffic_lights[0]
-                    distance = Point(traffic_light.position).distance(self.polygon)
-
+                # if len(self.traffic_lights) == 0:
+                #     return 1
+                # else:
+                #     traffic_light = self.traffic_lights[0]
+                #     distance = Point(traffic_light.position).distance(self.polygon)
             return None if distance > DISTANCE_LIGHT_LIMIT else distance / DISTANCE_LIGHT_LIMIT
 
         return None

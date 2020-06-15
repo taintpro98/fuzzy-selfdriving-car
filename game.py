@@ -81,6 +81,8 @@ class Game:
         self.map_layer.zoom = 0.3
         self.zoomchange = 1
         self.group = PyscrollGroup(map_layer=self.map_layer, default_layer=1)
+        self.car = Car('lamborghini.png')
+        self.obstacles = []
 
         self.path = None
         self.path_sides = None
@@ -295,7 +297,7 @@ class Game:
         from collections import deque
         times = deque(maxlen=FPS)
         # pygame.mixer.init()
-        pygame.mixer.music.load("music/deepside.mp3") 
+        pygame.mixer.music.load("music/sex.mp3") 
         pygame.mixer.music.play(-1,0.0)
 
         try:
@@ -311,7 +313,6 @@ class Game:
                 if self.start and not self.finished:
                     if not self.car.polygon.intersection(self.finish_point):
                         variables = self.car.get_variables()
-
                         speed = self.inference_engine.inference_speed(**variables)
                         steering = self.inference_engine.inference_steering(variables['deviation'])
                         steering_angle = (0.5 - steering) * 180 * 1.3
@@ -357,14 +358,22 @@ class Game:
                         4
                     )
 
-                # car_polygon = self.car.get_polygon()
-                # pygame.draw.lines(
-                #     screen,
-                #     Color('red'),
-                #     True,
-                #     self.map_layer.translate_points(car_polygon),
-                #     4
-                # )
+                car_polygon = self.car.get_polygon()
+                pygame.draw.lines(
+                    screen,
+                    Color('red'),
+                    True,
+                    self.map_layer.translate_points(car_polygon),
+                    4
+                )
+                light_detector = self.car.get_light_detector()
+                pygame.draw.lines(
+                    screen,
+                    Color('blue'),
+                    True,
+                    self.map_layer.translate_points(light_detector),
+                    4
+                )
 
                 pygame.display.flip()
 
