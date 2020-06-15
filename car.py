@@ -18,7 +18,7 @@ class Car(Sprite):
 
     def __init__(self, image_path):
         super(Car, self).__init__()
-        self.original_image = pygame.transform.rotozoom(utils.load_image(image_path).convert_alpha(), 0, 0.12)
+        self.original_image = pygame.transform.rotozoom(utils.load_image(image_path).convert_alpha(), 0, 0.10)
         # self.image = self.original_image
         self.velocity = [0, 0]
         self._position = [0, 0]

@@ -178,11 +178,10 @@ class Game:
                 #         del obstacle
                 removed = self.car.remove_obstacle_by_point(mouse_position_in_map)
                 if not removed:
-                    obs = Obstacle(mouse_position_in_map, 'rock1.png')
+                    obs = Obstacle(mouse_position_in_map, 'tank.png')
                     self.obstacles.append(obs)
                     self.car.add_obstacles(obs)
                     self.group.add(obs)
-                print(mouse_position_in_map)
             event = poll()
 
         pressed = pygame.key.get_pressed()
@@ -278,17 +277,14 @@ class Game:
         self.group.add(self.car)
 
     def display_obstacles(self, positions):
-        obstacles = [Obstacle(position, 'rock1.png') for position in positions]
+        obstacles = [Obstacle(position, 'tank.png') for position in positions]
         self.obstacles.extend(obstacles)
         self.car.obstacles.extend(obstacles)
         # self.car.update_obstacles()
         self.group.add(obstacles)
 
-    # def show_obstacle(self, position):
-
     @staticmethod
     def get_rect_with_point(point, bound=16):
-        print(point)
         x, y = point
         max_x, max_y, min_x, min_y = x + bound, y + bound, x - bound, y - bound
         return Polygon([(max_x, max_y), (max_x, min_y), (min_x, min_y), (min_x, max_y)])
@@ -296,16 +292,16 @@ class Game:
     def run(self):
         clock = pygame.time.Clock()
         self.running = True
-        # from collections import deque
-        # times = deque(maxlen=FPS)
+        from collections import deque
+        times = deque(maxlen=FPS)
         # pygame.mixer.init()
-        pygame.mixer.music.load("/Users/macbook/Downloads/test3.mp3") 
+        pygame.mixer.music.load("music/deepside.mp3") 
         pygame.mixer.music.play(-1,0.0)
 
         try:
             while self.running:
                 dt = clock.tick(FPS) / 1000.
-                # times.append(clock.get_fps())
+                times.append(clock.get_fps())
 
                 if len(self.start_end) < 2:
                     self.handle_click()
@@ -339,7 +335,7 @@ class Game:
 
                 if self.finished:
                     w, h = pygame.display.get_surface().get_size()
-                    text = pygame.font.Font('freesansbold.ttf', 80).render('DONE!!!', True, (255, 0, 0))
+                    text = pygame.font.Font('freesansbold.ttf', 30).render('EXCELLENT!!! Press R button to restart.', True, (255, 0, 0))
                     text_rect = text.get_rect()
                     text_rect.right = w / 2 + text_rect.w / 2
                     text_rect.top = h / 2 - text_rect.h / 2
