@@ -297,7 +297,7 @@ class Game:
         from collections import deque
         times = deque(maxlen=FPS)
         # pygame.mixer.init()
-        pygame.mixer.music.load("music/sex.mp3") 
+        pygame.mixer.music.load("music/barcode.mp3")
         pygame.mixer.music.play(-1,0.0)
 
         try:

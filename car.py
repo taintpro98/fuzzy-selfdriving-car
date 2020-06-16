@@ -18,7 +18,7 @@ class Car(Sprite):
 
     def __init__(self, image_path):
         super(Car, self).__init__()
-        self.original_image = pygame.transform.rotozoom(utils.load_image(image_path).convert_alpha(), 0, 0.10)
+        self.original_image = pygame.transform.rotozoom(utils.load_image(image_path).convert_alpha(), 0, 0.1)
         # self.image = self.original_image
         self.velocity = [0, 0]
         self._position = [0, 0]
@@ -166,7 +166,6 @@ class Car(Sprite):
 
     def get_light_distance(self):
         if len(self.traffic_lights) > 0:
-            print('get_light_dis', len(self.traffic_lights))
             traffic_light = self.traffic_lights[0]
             distance = Point(traffic_light.position).distance(self.polygon)
             if not not self.light_detector.intersection(Point(traffic_light.position)):
